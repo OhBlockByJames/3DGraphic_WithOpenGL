@@ -85,7 +85,10 @@ public class GraphicView extends  GLSurfaceView implements GLSurfaceView.Rendere
     final int mDROP  = 5;
     final int mSPLASH = 6;
 
+
+
     final int mPOINT = 1;
+    final int mPOINT2 = 2;
 
     //need to store length of each vertex buffer
     int[] mBufferLen = new int[] {0,0,0,0,0,0,0}; //0/Floor/Ball/Pool/Wall/Drop/Splash
@@ -117,10 +120,10 @@ public class GraphicView extends  GLSurfaceView implements GLSurfaceView.Rendere
     int mOrientation = 0; //portrait\landscape
 
     //options menu defaults
-    public boolean ShowBall = true;
-    public boolean ShowFloor = false;
-    public boolean ShowFountain = false;
-    public boolean ShowPool = false;
+    public boolean ShowBall = false;
+    public boolean ShowFloor = true;
+    public boolean ShowFountain = true;
+    public boolean ShowPool = true;
     public boolean RotateScene = true;
     public boolean UseTiltAngle = false;
     public boolean MultiBillboard = true;
@@ -128,7 +131,8 @@ public class GraphicView extends  GLSurfaceView implements GLSurfaceView.Rendere
     public boolean Paused = false;
 
     //add
-    public boolean ShowPoint = true;
+    public boolean ShowPoint = false;
+    public boolean ShowPoint2 = false;
 
 
     public GraphicView(Activity pActivity)
@@ -182,11 +186,12 @@ public class GraphicView extends  GLSurfaceView implements GLSurfaceView.Rendere
         //every POINT has the same coordinates
         float vtx[] = {
                 // X,  Y, Z
-                0f, 0f, 0,
-                10f,20f, 30f,
-                -10f,-20f, 10f,
-                20f,20f,20f
+                0f,20f,50f,
+                20f,20f,20f,
+                30f,15f,18f,
         };
+
+
 
         GL11 gl = (GL11)gl1; //we need 1.1 functionality
         //set background frame color
@@ -194,11 +199,14 @@ public class GraphicView extends  GLSurfaceView implements GLSurfaceView.Rendere
         //generate vertex arrays for scene objects
         BuildPoint(gl,vtx);
         //BuildFloor(gl);
-        BuildBall(gl);
+        //BuildBall(gl);
         BuildPool(gl);
         BuildWall(gl);
         BuildDrop(gl);
-        BuildSplash(gl);
+        //BuildSplash(gl);
+        //BuildPoint2(gl);
+
+
 
         //新增點
         //BuildPoint(gl);
@@ -207,6 +215,15 @@ public class GraphicView extends  GLSurfaceView implements GLSurfaceView.Rendere
     void BuildPoint(GL11 gl,float vertex[]){
         StoreVertexData(gl, vertex, mPOINT); //store in GPU buffer
     }
+
+    /*void BuildPoint2(GL11 gl){
+        float vtx2[] = {
+                // X,  Y, Z
+                -10f,-20f, 10f,
+                20f,80f,-20f,
+        };
+        StoreVertexData(gl, vtx2, mPOINT2); //store in GPU buffer
+    }*/
 
     /*void BuildFloor(GL11 gl)
     {
@@ -245,7 +262,7 @@ public class GraphicView extends  GLSurfaceView implements GLSurfaceView.Rendere
         StoreVertexData(gl, vtx, mFLOOR); //store in GPU buffer
     }*/
 
-    void BuildBall(GL11 gl)
+    /*void BuildBall(GL11 gl)
     {
         //need to add 1 to include last vertex
         float x[][] = new float[mBallVSliceCnt+1][mBallHSliceCnt+1];
@@ -307,7 +324,7 @@ public class GraphicView extends  GLSurfaceView implements GLSurfaceView.Rendere
             }
 
         StoreVertexData(gl, vtx, mBALL); //store in GPU buffer
-    }
+    }*/
 
     void BuildPool(GL11 gl)
     {
@@ -382,7 +399,7 @@ public class GraphicView extends  GLSurfaceView implements GLSurfaceView.Rendere
         StoreVertexData(gl, vtx, mDROP); //store in GPU buffer
     }
 
-    void BuildSplash(GL11 gl)
+    /*void BuildSplash(GL11 gl)
     {
         //splashes never move
         //all splash triangles stored together
@@ -436,7 +453,7 @@ public class GraphicView extends  GLSurfaceView implements GLSurfaceView.Rendere
         }
 
         StoreVertexData(gl, vtx, mSPLASH); //store in GPU buffer
-    }
+    }*/
 
     void StoreVertexData(GL11 gl, float[] pVertices, int pObjectNum)
     {
@@ -578,17 +595,20 @@ public class GraphicView extends  GLSurfaceView implements GLSurfaceView.Rendere
         //繪製點
         if (ShowPoint) {
             gl.glPushMatrix();
-            gl.glColor4f(1f, 1f, 0f, 1);
+            gl.glColor4f(1f, 0f, 0f, 1);
             //POINT SIZE : 用PIXEL定義該點大小
             gl.glPointSize(50);
-            DrawObject(gl, GLES20.GL_POINTS,mPOINT);
+            DrawPointCloud(gl, GLES20.GL_POINTS,mPOINT);
+
             gl.glPopMatrix();
         }
-        if (ShowBall)
+
+
+        /*if (ShowBall)
         {
             //draw first color
             gl.glPushMatrix();
-            gl.glColor4f(.5f, .5f, .5f, 1); //gray
+            gl.glColor4f(.5f, .5f, .5f, 1);
             gl.glRotatef(mAngCtr, 0.0f, 1.0f, 0f);
             DrawObject(gl, GL11.GL_TRIANGLES, mBALL);
             gl.glPopMatrix();
@@ -599,7 +619,7 @@ public class GraphicView extends  GLSurfaceView implements GLSurfaceView.Rendere
             gl.glRotatef(mAngCtr+360f/mBallHSliceCnt, 0.0f, 1.0f, 0f);
             DrawObject(gl, GL11.GL_TRIANGLES, mBALL);
             gl.glPopMatrix();
-        }
+        }*/
 
         if (ShowFountain)
         {
@@ -626,14 +646,48 @@ public class GraphicView extends  GLSurfaceView implements GLSurfaceView.Rendere
             gl.glPopMatrix();
         }
 
-        /*if (ShowFloor)
+
+        if (ShowPoint2) {
+            gl.glPushMatrix();
+            gl.glColor4f(1f, 0.3f, 0.8f, 1);
+            //POINT SIZE : 用PIXEL定義該點大小
+            gl.glPointSize(100);
+            //activate vertex array type
+            gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
+            //get vertices for this object id
+            gl.glBindBuffer(GL11.GL_ARRAY_BUFFER, mPOINT);
+            //each vertex is made up of 3 floats [x\y\z]
+            gl.glVertexPointer(3, GL11.GL_FLOAT, 0, 0);
+            //draw triangles
+            gl.glDrawArrays(GLES20.GL_POINTS, 0, mBufferLen[mPOINT]);
+            //unbind from memory
+            gl.glBindBuffer(GL11.GL_ARRAY_BUFFER, 0);
+            gl.glPopMatrix();
+        }
+
+        if (ShowFloor)
         {
-            gl.glColor4f(0.7f, 1f, 0.7f, 1f); //light green
+            gl.glColor4f(0f, 0f, 1f, 1f); //light green
             DrawObject(gl, GL11.GL_TRIANGLES, mFLOOR);
-        }*/
+        }
     }
 
     void DrawObject(GL11 gl, int pShapeType, int pObjNum)
+    {
+        gl.glClearColor(0,0,0,1);
+        //activate vertex array type
+        gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
+        //get vertices for this object id
+        gl.glBindBuffer(GL11.GL_ARRAY_BUFFER, pObjNum);
+        //each vertex is made up of 3 floats [x\y\z]
+        gl.glVertexPointer(3, GL11.GL_FLOAT, 0, 0);
+        //draw triangles
+        gl.glDrawArrays(pShapeType, 0, mBufferLen[pObjNum]);
+        //unbind from memory
+        gl.glBindBuffer(GL11.GL_ARRAY_BUFFER, 0);
+    }
+
+    void DrawPointCloud(GL11 gl, int pShapeType, int pObjNum)
     {
         //activate vertex array type
         gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
