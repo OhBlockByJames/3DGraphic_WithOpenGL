@@ -87,7 +87,7 @@ public class Lines implements Renderer{
 
         int C_Length=(Color.length/3)-1;
 
-        Log.d("color",""+C_Length+" R:"+Color[0]);
+
         // Draw x line
         // Set line color to green
         /*gl.glColor4f(0.0f, 1.0f, 0.0f, 1.0f);
@@ -112,7 +112,7 @@ public class Lines implements Renderer{
         for(int index=0;index<=C_Length;index++){
             gl.glPointSize(20);
             gl.glColor4f(Color[3*index], Color[3*index+1], Color[3*index+2], 1.0f);
-            gl.glDrawArrays(GL10.GL_POINTS, index, 20);
+            gl.glDrawArrays(GL10.GL_POINTS, index, C_Length);
         }
 
         //從vertexlist[0]開始數2個element進行繪製，換言之這邊會繪製vertexlist[0]與vertexlist[1]
