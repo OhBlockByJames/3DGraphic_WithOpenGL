@@ -10,6 +10,7 @@ import javax.microedition.khronos.opengles.GL10;
 import javax.microedition.khronos.opengles.GL11;
 
 import android.content.Context;
+import android.opengl.GLES10;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView.Renderer;
 import android.util.Log;
@@ -38,6 +39,7 @@ public class Lines implements Renderer{
     private final int AXIS_WIDTH = 10;
     private final float POINT_WIDTH = 20f;
     private int program;
+    private int color_length;
 
     public Lines(Context context) {
         mContext = context;
@@ -85,7 +87,6 @@ public class Lines implements Renderer{
                 0.5f, 0.5f, 0f, //24 rgb
         };
 
-        int C_Length=(Color.length/3)-1;
 
 
         // Draw x line
@@ -109,20 +110,30 @@ public class Lines implements Renderer{
         gl.glDrawArrays(GL10.GL_LINES, 17, 2);
         gl.glDrawArrays(GL10.GL_LINES, 19, 2);*/
 
-        for(int index=0;index<=C_Length;index++){
-            gl.glPointSize(20);
-            gl.glColor4f(Color[3*index], Color[3*index+1], Color[3*index+2], 1.0f);
-            gl.glDrawArrays(GL10.GL_POINTS, index, C_Length);
+        //建立顏色array(r,g,b,a)
+        float colors[]={
+                1.0f,0.0f,0.0f,1.0f,
+                0.0f,1.0f,0.0f,1.0f,
+                0.0f,0.0f,1.0f,1.0f
+        };
+
+        //每四個r,g,b,a一組
+        color_length=(colors.length/4)-1;
+        //設定點大小
+        gl.glPointSize(20);
+
+        for(int index=0;index<=color_length;index++){
+
+            //設定顏色 依序填入r,g,b,a
+            gl.glColor4f(colors[4*index], colors[4*index+1], colors[4*index+2], colors[4*index+3]);
+
+            /*
+            GL10.GL_POINTS:繪製openGL類型:POINTS
+            index:從array第幾項開始，利用for loop從0開始
+            count:從array[index]開始數2個element進行繪製
+            */
+            gl.glDrawArrays(GL10.GL_POINTS,index,1);
         }
-
-        //從vertexlist[0]開始數2個element進行繪製，換言之這邊會繪製vertexlist[0]與vertexlist[1]
-        /*gl.glPointSize(20);
-        gl.glColor4f(0.0f, 1.0f, 0.0f, 1.0f);
-        gl.glDrawArrays(GL10.GL_POINTS, 0, 20);
-
-        gl.glPointSize(50);
-        gl.glColor4f(1.0f, 0f, 0.0f, 1.0f);
-        gl.glDrawArrays(GL10.GL_POINTS, 15, 5);*/
     }
 
 
@@ -149,32 +160,9 @@ public class Lines implements Renderer{
     private void setAllBuffers(){
         // Set vertex buffer
         float vertexlist[] = {
-                -1.0f, 0.0f, 0.0f,   //0 X-axis
-                1.0f, 0.0f, 0.0f,   //1 X-axis
-                0.0f, 1.0f, 0.0f,   //2 Y-axis
-                0.0f,-1.0f, 0.0f,   //3 Y-axis
-                0.0f, 0.0f, 1.0f,   //4 Z-axis
-                0.0f, 0.0f,-1.0f,   //5 Z-axis
-                -0.5f , -0.5f, 0.0f ,   //6 point 1
-                0.5f, -0.5f, 0.0f ,    //7 point 2
-                0.0f , 0.5f, 0.0f ,      //8 point 3
-                0.9f, 0.1f, 0.0f,    //9  X-axis
-                1.0f, 0.0f, 0.0f,    //10 X-axis
-                0.9f,-0.1f, 0.0f,    //11 X-axis
-                1.0f, 0.0f, 0.0f,    //12 X-axis
-                -0.1f, 0.9f, 0.0f,   //13 Y-axis
-                0.0f, 1.0f, 0.0f,    //14 Y-axis
-                0.1f, 0.9f, 0.0f,     //15 Y-axis
-                0.0f, 1.0f, 0.0f,    //16 Y-axis
-                0.1f, 0.0f, 0.9f,    //17 Z-axis
-                0.0f, 0.0f, 1.0f,    //18 Z-axis
-                -0.1f,0.0f, 0.9f,    //19 Z-axis
-                0.0f, 0.0f, 1.0f,    //20 Z-axis
-
-                0.5f, 0.5f, 0.5f,    //point22
-                -0.5f, -0.5f, -0.5f, //point23
-                -0.5f, -0f, -0.5f, //point24
-                -0.5f, -0.5f, -0f, //point25
+                0.5f, 0.5f, 0.0f,   //0 X-axis
+                0.3f, 0.4f, 0.2f,   //1 X-axis
+                -0.2f, 0.3f, 0.1f,   //2 Y-axis
         };
 
         Log.d("Array length: ",""+(vertexlist.length)/3);
@@ -184,7 +172,6 @@ public class Lines implements Renderer{
         mVertexBuffer = vbb.asFloatBuffer();
         mVertexBuffer.put(vertexlist);
         mVertexBuffer.position(0);
-
 
     }
 
